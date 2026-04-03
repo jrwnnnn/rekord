@@ -1,39 +1,6 @@
 ---
 import Layout from "../layouts/Layout.astro";
-const formFields = [
-	{
-		name: "school_name",
-		label: "School Name",
-	},
-	{
-		name: "school_id",
-		label: "School ID",
-	},
-	{
-		name: "district",
-		label: "District",
-	},
-	{
-		name: "division",
-		label: "Division",
-	},
-	{
-		name: "region",
-		label: "Region",
-	},
-	{
-		name: "section",
-		label: "Section",
-	},
-	{
-		name: "school_year",
-		label: "School Year",
-	},
-	{
-		name: "adviser",
-		label: "Name of Adviser/Teacher",
-	},
-];
+import htmlFields from "../data/htmlFields.json";
 ---
 
 <Layout title="Rekord BETA">
@@ -75,42 +42,46 @@ const formFields = [
 				/>
 			</div>
 
-			<div class="space-y-2 opacity-50">
-				<h2 class="font-bold">3. Define Scholastic Record Header</h2>
+			<div class="space-y-2">
+				<h2 class="font-bold">3. Define School and Class Info</h2>
 				<div class="space-y-4">
 					<div class="flex flex-col">
-						<label for={"grade"} class="mb-1 text-sm font-medium text-gray-700">
+						<label
+							for="classified_as_grade"
+							class="mb-1 text-sm font-medium text-gray-700"
+						>
 							Classified as Grade:
 						</label>
 						<select
-							id="grade"
-							name="grade"
+							id="classified_as_grade"
+							name="classified_as_grade"
 							class="w-full cursor-pointer border border-black bg-white px-3 py-2 text-sm focus:border-blue-600 focus:ring-1 focus:ring-blue-600 focus:outline-none"
 							required
-							disabled
 						>
 							<option value="" disabled selected>Select an option...</option>
 							<option value="4">Grade 4</option>
 						</select>
 					</div>
 					{
-						formFields.map((field) => (
-							<div class="flex flex-col">
-								<label
-									for={`input${field.name}`}
-									class="mb-1 text-sm font-medium text-gray-700"
-								>
-									{field.label}:
-								</label>
-								<input
-									id={`input${field.name}`}
-									name={`input${field.name}`}
-									type="text"
-									class="grow border border-black px-2 py-2 text-sm focus:border-blue-600 focus:ring-1 focus:ring-blue-600 focus:outline-none"
-									disabled
-								/>
-							</div>
-						))
+						htmlFields.map(
+							(field) =>
+								field.name !== "classified_as_grade" && (
+									<div class="flex flex-col">
+										<label
+											for={`input${field.name}`}
+											class="mb-1 text-sm font-medium text-gray-700"
+										>
+											{field.label}:
+										</label>
+										<input
+											id={`input${field.name}`}
+											name={`input${field.name}`}
+											type="text"
+											class="grow border border-black px-2 py-2 text-sm focus:border-blue-600 focus:ring-1 focus:ring-blue-600 focus:outline-none"
+										/>
+									</div>
+								),
+						)
 					}
 				</div>
 			</div>
@@ -218,6 +189,7 @@ const formFields = [
 	import { updateProgressBar } from "@utils/progress";
 	import { saveAs } from "file-saver";
 	import fontkit from "@pdf-lib/fontkit";
+	import htmlFields from "../data/htmlFields.json";
 	import JSZip from "jszip";
 	import Papa from "papaparse";
 
@@ -228,6 +200,14 @@ const formFields = [
 
 		const csvFile = (htmlForm.file as HTMLInputElement).files?.[0];
 		const flatten = (htmlForm.flatten as HTMLInputElement).checked;
+		const classInfo = Object.fromEntries(
+			htmlFields.map((field: { name: string }) => [
+				field.name,
+				field.name === "classified_as_grade"
+					? (htmlForm.classified_as_grade as HTMLSelectElement).value
+					: (htmlForm[`input${field.name}`] as HTMLInputElement).value,
+			]),
+		);
 
 		if (!csvFile) return;
 
@@ -270,7 +250,7 @@ const formFields = [
 						`Creating SF10 for ${row["info.last_name"]}, ${row["info.first_name"]}...`,
 					);
 
-					populateFields(acroform, fonts, row);
+					populateFields(acroform, fonts, classInfo, row);
 
 					if (flatten) {
 						acroform.flatten();

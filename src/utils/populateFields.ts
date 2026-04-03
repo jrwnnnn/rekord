@@ -10,11 +10,22 @@ export interface Fonts {
 export async function populateFields(
 	form: PDFForm,
 	fonts: Fonts,
+	classInfo: Record<string, string>,
 	csvRow: Record<string, string>,
 ) {
 	console.log(
 		`Creating SF10 for ${csvRow["info.last_name"]}, ${csvRow["info.first_name"]}...`,
 	);
+
+	// Populate school and class info fields based of the HTML form inputs
+	for (const [htmlFieldName, value] of Object.entries(classInfo)) {
+		const pdfFieldName = `scholastic_${classInfo.classified_as_grade}.${htmlFieldName}`;
+		const pdfField = form.getTextField(pdfFieldName);
+		setFontSize(pdfField, value, fonts.arialBold, 12);
+		pdfField.setAlignment(TextAlignment.Center);
+		pdfField.setText(value || "");
+		pdfField.updateAppearances(fonts.arialBold);
+	}
 
 	for (const [pdfFieldName, value] of Object.entries(csvRow)) {
 		// Skip checkbox fields and the "credential_presented_for_grade_1" field for now
