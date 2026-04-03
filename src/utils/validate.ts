@@ -1,4 +1,4 @@
-import { error } from "@utils/progress";
+import { updateProgressBar } from "@utils/progress";
 import Papa from "papaparse";
 
 const REQUIRED_COLUMNS = [
@@ -18,7 +18,11 @@ export function validate(file: File): Promise<boolean> {
 	return new Promise((resolve) => {
 		if (file.type !== "text/csv" && !file.name.toLowerCase().endsWith(".csv")) {
 			console.error("Invalid file type. Expected CSV.");
-			error("Invalid file type.", "Please upload a .csv file.");
+			updateProgressBar(
+				"Invalid file type.",
+				"Please upload a .csv file.",
+				"https://cdn-icons-png.flaticon.com/512/6514/6514954.png",
+			);
 			return resolve(false);
 		}
 
@@ -38,7 +42,11 @@ export function validate(file: File): Promise<boolean> {
 				}
 
 				if (results.data.length === 0) {
-					error("CSV is empty.", "The uploaded CSV file is empty.");
+					updateProgressBar(
+						"CSV is empty.",
+						"The uploaded CSV file is empty.",
+						"https://cdn-icons-png.flaticon.com/512/6514/6514954.png",
+					);
 					return resolve(false);
 				}
 
@@ -46,7 +54,11 @@ export function validate(file: File): Promise<boolean> {
 			},
 			error: (parseError) => {
 				console.error("Error parsing CSV:", parseError);
-				error("Error parsing CSV.", parseError.message as string);
+				updateProgressBar(
+					"Error parsing CSV.",
+					parseError.message as string,
+					"https://cdn-icons-png.flaticon.com/512/6514/6514954.png",
+				);
 				resolve(false);
 			},
 		});

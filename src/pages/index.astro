@@ -215,7 +215,7 @@ const formFields = [
 	import { fill } from "@utils/fill";
 	import { validate } from "@utils/validate";
 	import { PDFDocument } from "pdf-lib";
-	import { progress } from "@utils/progress";
+	import { updateProgressBar } from "@utils/progress";
 	import { saveAs } from "file-saver";
 	import fontkit from "@pdf-lib/fontkit";
 	import JSZip from "jszip";
@@ -231,7 +231,8 @@ const formFields = [
 
 		if (!file) return;
 
-		progress("Parsing CSV file...");
+		console.log("Parsing CSV file...");
+		updateProgressBar("Parsing CSV file...");
 		if (!(await validate(file))) return;
 
 		const template = await fetch("/acroform.pdf").then((r) => r.arrayBuffer());
@@ -246,7 +247,8 @@ const formFields = [
 			encoding: "ISO-8859-1",
 			complete: async (results) => {
 				const rows = results.data as Record<string, string>[];
-				progress(`Parsed ${rows.length} rows. Generating PDFs...`);
+				console.log(`Parsed ${rows.length} rows. Generating PDFs...`);
+				updateProgressBar(`Parsed ${rows.length} rows. Generating PDFs...`);
 				const zip = new JSZip();
 
 				for (const row of rows) {
@@ -258,7 +260,9 @@ const formFields = [
 					};
 					const acroform = pdfDoc.getForm();
 
-					progress(`Creating SF10 for ${row.last_name}, ${row.first_name}...`);
+					updateProgressBar(
+						`Creating SF10 for ${row["info.last_name"]}, ${row["info.first_name"]}...`,
+					);
 
 					fill(acroform, row, fonts);
 
@@ -273,12 +277,14 @@ const formFields = [
 					zip.file(fileName, await pdfDoc.save());
 				}
 
-				progress("Generating ZIP file...");
+				console.log("Generating ZIP file...");
+				updateProgressBar("Generating ZIP file...");
 
 				const content = await zip.generateAsync({ type: "blob" });
 				saveAs(content, "SF10_Batch_Export.zip");
 
-				progress(
+				console.log("Done.");
+				updateProgressBar(
 					"Done.",
 					"Your download should automatically start now. If it doesn't, click the button below to download manually.",
 					"https://media.tenor.com/GWewIVSoJBcAAAAM/yippee.gif",
