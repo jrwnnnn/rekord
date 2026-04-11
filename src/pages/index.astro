@@ -238,6 +238,11 @@ import htmlFields from "../data/htmlFields.json";
 				const zip = new JSZip();
 
 				for (const row of rows) {
+					if (!row["info.lrn"]) {
+						console.warn(`Skipped row ${rows.indexOf(row) + 1} with missing LRN`);
+						continue;
+					}
+
 					// Load the PDF template and register fontkit
 					const pdfDoc = await PDFDocument.load(template).then((doc) => {
 						doc.registerFontkit(fontkit);
