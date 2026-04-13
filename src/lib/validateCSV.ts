@@ -31,8 +31,8 @@ export function validateCSV(file: File, grade: number): Promise<boolean> {
 					let message = "";
 
 					if (missingColumns.length > 5) {
-						const shown = missingColumns.slice(0, 5).join(", ");
-						message = `Missing columns: ${shown}, and ${missingColumns.length - 5} more...`;
+						const shown = missingColumns.slice(0, 3).join(", ");
+						message = `Missing columns: ${shown}, and ${missingColumns.length - 3} more...`;
 					} else {
 						message = `Missing columns: ${missingColumns.join(", ")}`;
 					}
