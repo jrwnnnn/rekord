@@ -182,11 +182,11 @@ import htmlFields from "../data/htmlFields.json";
 
 <script src="@utils/downloadTemplate.ts"></script>
 <script>
-	import { populateFields } from "@lib/populateFields";
-	import { validateCSV } from "@lib/validateCSV";
 	import { PDFDocument } from "pdf-lib";
-	import { updateProgressBanner } from "@utils/progressBanner";
+	import { populateFields } from "@lib/populateFields";
 	import { saveAs } from "file-saver";
+	import { updateProgressBanner } from "@utils/progressBanner";
+	import { validateCSV } from "@lib/validateCSV";
 	import fontkit from "@pdf-lib/fontkit";
 	import JSZip from "jszip";
 	import Papa from "papaparse";
@@ -196,8 +196,8 @@ import htmlFields from "../data/htmlFields.json";
 	htmlForm.addEventListener("submit", async (e) => {
 		e.preventDefault();
 
-		const htmlFormValues = Object.fromEntries(new FormData(htmlForm).entries());
-		const csvFile = htmlFormValues.file as File;
+		const formValues = Object.fromEntries(new FormData(htmlForm).entries());
+		const csvFile = formValues.file as File;
 
 		if (!csvFile) return;
 
@@ -206,7 +206,7 @@ import htmlFields from "../data/htmlFields.json";
 		if (
 			!(await validateCSV(
 				csvFile,
-				parseInt(htmlFormValues.classified_as_grade as string),
+				parseInt(formValues.classified_as_grade as string),
 			))
 		) 
 			return;
@@ -255,9 +255,9 @@ import htmlFields from "../data/htmlFields.json";
 						`Creating SF10 for ${row["learner.last_name"]}, ${row["learner.first_name"]}...`,
 					);
 
-					populateFields(acroform, fonts, htmlFormValues, row);
+					populateFields(acroform, fonts, formValues, row);
 
-					if (htmlFormValues.flatten === "on") {
+					if (formValues.flatten === "on") {
 						acroform.flatten();
 					}
 
