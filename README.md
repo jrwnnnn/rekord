@@ -6,7 +6,6 @@
    <!-- FIND PREMADE BADGES HERE: https://github.com/Ileriayo/markdown-badges -->
    <a href="https://astro.build"><img src="https://img.shields.io/badge/astro-%232C2052.svg?style=for-the-badge&logo=astro&logoColor=white"></a>
    <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white"></a>
-   <a href="https://sqlite.org"><img src="https://img.shields.io/badge/sqlite-%2307405e.svg?style=for-the-badge&logo=sqlite&logoColor=white"></a>
    <a href="./LICENSE"><img src="https://img.shields.io/github/license/jrwnnnn/scaffold?style=for-the-badge"></a>
    <a href="https://github.com/jrwnnnn/scaffold/stargazers"><img src="https://img.shields.io/github/stars/jrwnnnn/scaffold?style=for-the-badge"></a>
 </div>
