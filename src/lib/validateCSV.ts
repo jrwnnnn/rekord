@@ -22,14 +22,27 @@ export function validateCSV(file: File, grade: number): Promise<boolean> {
 			complete: (results) => {
 				const columns = results.meta.fields;
 
-				// Check for missing columns based on the grade schema
+				// Check if the CSV is empty
+				if (results.data.length === 0) {
+					updateProgressBanner(
+						"CSV is empty.",
+						"The uploaded CSV file is empty.",
+						"https://cdn-icons-png.flaticon.com/512/6514/6514954.png",
+					);
+					return resolve(false);
+				}
+
+				// Find the schema for the specified grade
 				const gradeSchema = schema.find((s) => s.grade === grade);
+
+				// Check for missing columns based on the grade schema
 				const missingColumns = (gradeSchema ? gradeSchema.columns : []).filter(
 					(col) => !columns!.includes(col),
 				);
+				
 				if (missingColumns.length > 0) {
+					// If there are more than 5 missing columns, show only the first 3 and indicate how many more are missing
 					let message = "";
-
 					if (missingColumns.length > 5) {
 						const shown = missingColumns.slice(0, 3).join(", ");
 						message = `Missing columns: ${shown}, and ${missingColumns.length - 3} more...`;
@@ -46,16 +59,6 @@ export function validateCSV(file: File, grade: number): Promise<boolean> {
 						"https://cdn-icons-png.flaticon.com/512/6514/6514954.png",
 					);
 
-					return resolve(false);
-				}
-
-				// Check if CSV is empty
-				if (results.data.length === 0) {
-					updateProgressBanner(
-						"CSV is empty.",
-						"The uploaded CSV file is empty.",
-						"https://cdn-icons-png.flaticon.com/512/6514/6514954.png",
-					);
 					return resolve(false);
 				}
 
