@@ -182,11 +182,11 @@ import htmlFields from "../data/htmlFields.json";
 
 <script src="@utils/downloadTemplate.ts"></script>
 <script>
-	import { populateFields } from "@lib/populateFields";
-	import { validateCSV } from "@lib/validateCSV";
 	import { PDFDocument } from "pdf-lib";
-	import { updateProgressBanner } from "@utils/progressBanner";
+	import { populateFields } from "@lib/populateFields";
 	import { saveAs } from "file-saver";
+	import { updateProgressBanner } from "@utils/progressBanner";
+	import { validateCSV } from "@lib/validateCSV";
 	import fontkit from "@pdf-lib/fontkit";
 	import JSZip from "jszip";
 	import Papa from "papaparse";
