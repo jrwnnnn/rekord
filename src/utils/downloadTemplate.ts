@@ -1,10 +1,10 @@
 import { saveAs } from "file-saver";
 
-const templateSelect = document.getElementById(
-	"template-select",
+const dropdown = document.getElementById(
+	"template-selection-dropdown",
 ) as HTMLSelectElement;
 
-templateSelect.addEventListener("change", function () {
+dropdown.addEventListener("change", function () {
 	const fileUrl = this.value;
 	if (fileUrl) {
 		const fileName = fileUrl.split("/").pop();
