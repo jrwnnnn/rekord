@@ -203,12 +203,7 @@ import htmlFields from "../data/htmlFields.json";
 
 		console.log("Parsing CSV file...");
 		updateProgressBanner("Parsing CSV file...");
-		if (
-			!(await validateCSV(
-				csvFile,
-				parseInt(formValues.classified_as_grade as string),
-			))
-		) 
+		if (!(await validateCSV(csvFile, Number(formValues.classified_as_grade))))
 			return;
 
 		// Load the PDF template and fonts asynchronously
