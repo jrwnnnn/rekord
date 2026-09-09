@@ -38,7 +38,9 @@ export async function populateFields(
 
 	// Populate the remaining fields based on the CSV
 	for (const [pdfFieldName, value] of Object.entries(csvRow)) {
-		// Handle checkbox fields
+		// Handle Credential Presented for Grade 1 checkbox.
+		// A student's list of presented credentials for grade 1 is stored as one comma-separated string (or "All" if every credential is present).
+		// checkboxMap.json maps each known label to its PDF checkbox field name, so we check every box whose label appears in the cell.
 		if (pdfFieldName === "credential_presented_for_grade_1") {
 			for (const [label, fieldName] of Object.entries(checkboxMap)) {
 				if (value === "All" || value.includes(label)) {
@@ -53,6 +55,7 @@ export async function populateFields(
 			const subjectCode = pdfFieldName.slice(
 				`record_${gradeLevel}.final_rating.`.length,
 			);
+			
 			form
 				.getTextField(`record_${gradeLevel}.remarks.${subjectCode}`)
 				.setText(
