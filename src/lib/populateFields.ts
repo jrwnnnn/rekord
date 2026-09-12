@@ -55,14 +55,16 @@ export async function populateFields(
 			const subjectCode = pdfFieldName.slice(
 				`record_${gradeLevel}.final_rating.`.length,
 			);
-			
-			form
-				.getTextField(`record_${gradeLevel}.remarks.${subjectCode}`)
-				.setText(
-					Number(value) >= Number(htmlFormValues.passing_criteria)
-						? "Passed"
-						: "Failed",
-				);
+
+			if (value) { // Skip if final rating is empty or undefined.
+				form
+					.getTextField(`record_${gradeLevel}.remarks.${subjectCode}`)
+					.setText(
+						Number(value) >= Number(htmlFormValues.passing_criteria)
+							? "Passed"
+							: "Failed",
+					);
+			}
 		}
 
 		form.getTextField(pdfFieldName).setText(
