@@ -182,6 +182,7 @@ import htmlFields from "../data/htmlFields.json";
 
 <script src="@utils/downloadTemplate.ts"></script>
 <script>
+	import { initFonts } from "@utils/styleField";
 	import { PDFDocument } from "pdf-lib";
 	import { populateFields } from "@lib/populateFields";
 	import { saveAs } from "file-saver";
@@ -206,12 +207,10 @@ import htmlFields from "../data/htmlFields.json";
 		if (!(await validateCSV(csvFile, Number(formValues.classified_as_grade))))
 			return;
 
-		// Load the PDF template and fonts asynchronously
-		const [template, arialBoldBytes, arialNarrowBoldBytes] = await Promise.all([
-			fetch("/acroforms/es.pdf").then((r) => r.arrayBuffer()),
-			fetch("/fonts/Arial-Bold.ttf").then((r) => r.arrayBuffer()),
-			fetch("/fonts/Arial-Narrow-Bold.ttf").then((r) => r.arrayBuffer()),
-		]);
+		// Load the PDF template
+		const template = await fetch("/acroforms/es.pdf").then((r) =>
+			r.arrayBuffer(),
+		);
 
 		Papa.parse(csvFile, {
 			header: true,
@@ -236,11 +235,7 @@ import htmlFields from "../data/htmlFields.json";
 					const pdfDoc = await PDFDocument.load(template);
 					pdfDoc.registerFontkit(fontkit);
 
-					// Embed the fonts to the PDF document
-					const fonts = {
-						arialBold: await pdfDoc.embedFont(arialBoldBytes),
-						arialNarrowBold: await pdfDoc.embedFont(arialNarrowBoldBytes),
-					};
+					await initFonts(pdfDoc);
 
 					const acroform = pdfDoc.getForm();
 
@@ -248,7 +243,7 @@ import htmlFields from "../data/htmlFields.json";
 						`Creating SF10 for ${row["learner.last_name"]}, ${row["learner.first_name"]}...`,
 					);
 
-					populateFields(acroform, fonts, formValues, row);
+					populateFields(acroform, formValues, row);
 
 					if (formValues.flatten === "on") {
 						acroform.flatten();

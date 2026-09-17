@@ -1,16 +1,10 @@
-﻿import type { PDFForm, PDFFont } from "pdf-lib";
+﻿import type { PDFForm } from "pdf-lib";
+import checkboxMap from "../data/checkboxMap.json";
 import { PDFName, PDFTextField } from "pdf-lib";
 import { styleField } from "@utils/styleField";
-import checkboxMap from "../data/checkboxMap.json";
-
-interface Fonts {
-	arialBold: PDFFont;
-	arialNarrowBold: PDFFont;
-}
 
 export async function populateFields(
 	form: PDFForm,
-	fonts: Fonts,
 	htmlFormValues: Record<string, FormDataEntryValue>,
 	csvRow: Record<string, string>,
 ) {
@@ -55,7 +49,7 @@ export async function populateFields(
 			const subjectCode = pdfFieldName.slice(
 				`record_${gradeLevel}.final_rating.`.length,
 			);
-			
+
 			form
 				.getTextField(`record_${gradeLevel}.remarks.${subjectCode}`)
 				.setText(
@@ -100,6 +94,11 @@ export async function populateFields(
 		if (!field.acroField.getDefaultAppearance()) {
 			field.acroField.setDefaultAppearance("/Arial 12 Tf 0 g");
 		}
-		styleField(field, fonts, field.getName());
+
+		if (field.getName().startsWith("enrollment.")) {
+			styleField(field, "arial-narrow", 11, "left");
+		} else {
+			styleField(field, "arial-bold", 12, "center");
+		}
 	}
 }

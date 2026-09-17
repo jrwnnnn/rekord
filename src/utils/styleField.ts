@@ -1,9 +1,29 @@
-import type { PDFFont } from "pdf-lib";
-import { PDFTextField, TextAlignment } from "pdf-lib";
+import type { PDFDocument, PDFFont, PDFTextField } from "pdf-lib";
+import { TextAlignment } from "pdf-lib";
 
-interface Fonts {
-	arialBold: PDFFont;
-	arialNarrowBold: PDFFont;
+const alignmentMap = {
+	left: TextAlignment.Left,
+	center: TextAlignment.Center,
+	right: TextAlignment.Right,
+};
+
+export type FontName = "arial-bold" | "arial-narrow";
+let arialBoldBytes: ArrayBuffer | null = null;
+let arialNarrowBoldBytes: ArrayBuffer | null = null;
+let fontMap: Record<FontName, PDFFont>;
+
+export async function initFonts(pdfDoc: PDFDocument): Promise<void> {
+	if (!arialBoldBytes || !arialNarrowBoldBytes) {
+		[arialBoldBytes, arialNarrowBoldBytes] = await Promise.all([
+			fetch("/fonts/Arial-Bold.ttf").then((r) => r.arrayBuffer()),
+			fetch("/fonts/Arial-Narrow-Bold.ttf").then((r) => r.arrayBuffer()),
+		]);
+	}
+
+	fontMap = {
+		"arial-bold": await pdfDoc.embedFont(arialBoldBytes),
+		"arial-narrow": await pdfDoc.embedFont(arialNarrowBoldBytes),
+	};
 }
 
 function shrinkToFit(
@@ -24,20 +44,16 @@ function shrinkToFit(
 
 export function styleField(
 	field: PDFTextField,
-	fonts: Fonts,
-	pdfFieldName: string,
+	fontName: FontName = "arial-bold",
+	maxSize = 12,
+	alignment: "left" | "center" | "right" = "center",
 ): void {
+	const font = fontMap[fontName];
 	const text = field.getText() ?? "";
 	const fieldWidth =
 		field.acroField.getWidgets()[0]?.getRectangle().width ?? Infinity;
 
-	if (pdfFieldName.startsWith("enrollment.")) {
-		field.setFontSize(shrinkToFit(text, fonts.arialNarrowBold, 11, fieldWidth));
-		field.setAlignment(TextAlignment.Left);
-		field.updateAppearances(fonts.arialNarrowBold);
-	} else {
-		field.setFontSize(shrinkToFit(text, fonts.arialBold, 12, fieldWidth));
-		field.setAlignment(TextAlignment.Center);
-		field.updateAppearances(fonts.arialBold);
-	}
+	field.setFontSize(shrinkToFit(text, font, maxSize, fieldWidth));
+	field.setAlignment(alignmentMap[alignment]);
+	field.updateAppearances(font);
 }
