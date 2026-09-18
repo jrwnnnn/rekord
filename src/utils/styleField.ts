@@ -32,14 +32,14 @@ function shrinkToFit(
 	maxSize: number,
 	fieldWidth: number,
 	minSize = 6,
+	padding = 4,
 ): number {
 	if (!text) return maxSize;
-	for (let size = maxSize; size >= minSize; size -= 1) {
-		if (font.widthOfTextAtSize(text, size) <= fieldWidth) {
-			return size;
-		}
-	}
-	return minSize;
+	const availableWidth = fieldWidth - padding;
+	const currentWidth = font.widthOfTextAtSize(text, maxSize);
+	if (currentWidth <= availableWidth) return maxSize;
+	const fitSize = (availableWidth / currentWidth) * maxSize;
+	return Math.max(minSize, fitSize);
 }
 
 export function styleField(
