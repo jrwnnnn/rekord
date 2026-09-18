@@ -96,7 +96,7 @@ export async function populateFields(
 		}
 
 		if (field.getName().startsWith("enrollment.")) {
-			styleField(field, "arial-narrow", 11, "left");
+			styleField(field, "arial-narrow-bold", 11, "left");
 		} else {
 			styleField(field, "arial-bold", 12, "center");
 		}

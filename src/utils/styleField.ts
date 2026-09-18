@@ -7,7 +7,7 @@ const alignmentMap = {
 	right: TextAlignment.Right,
 };
 
-export type FontName = "arial-bold" | "arial-narrow";
+export type FontName = "arial-bold" | "arial-narrow-bold";
 let arialBoldBytes: ArrayBuffer | null = null;
 let arialNarrowBoldBytes: ArrayBuffer | null = null;
 let fontMap: Record<FontName, PDFFont>;
@@ -22,7 +22,7 @@ export async function initFonts(pdfDoc: PDFDocument): Promise<void> {
 
 	fontMap = {
 		"arial-bold": await pdfDoc.embedFont(arialBoldBytes),
-		"arial-narrow": await pdfDoc.embedFont(arialNarrowBoldBytes),
+		"arial-narrow-bold": await pdfDoc.embedFont(arialNarrowBoldBytes),
 	};
 }
 
