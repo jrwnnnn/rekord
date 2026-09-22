@@ -202,8 +202,8 @@ import htmlFields from "../data/htmlFields.json";
 
 		console.log("Parsing CSV file...");
 		updateProgressBanner("Parsing CSV file...");
-		if (!(await validateCSV(csvFile, Number(formValues.classified_as_grade))))
-			return;
+		
+		if (!(await validateCSV(csvFile))) return;
 
 		// Load the PDF template
 		const template = await fetch("/acroforms/es.pdf").then((r) =>
