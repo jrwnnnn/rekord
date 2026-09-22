@@ -1,6 +1,5 @@
 ﻿import type { PDFForm } from "pdf-lib";
 import { PDFName, PDFTextField } from "pdf-lib";
-import { styleField } from "@utils/styleField";
 
 export async function populateFields(
 	form: PDFForm,
