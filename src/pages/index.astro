@@ -162,11 +162,10 @@ import Layout from "../layouts/Layout.astro";
 						acroform.flatten();
 					}
 
-					const fileName =
-						`${row["learner.last_name"]}_${row["learner.first_name"]}.pdf`.replace(
-							/\s+/g,
-							"_",
-						);
+					const fileName = `${row["name"]}_${row["lrn"]}.pdf`.replace(
+						/\s+/g,
+						"_",
+					);
 
 					zip.file(fileName, await pdfDoc.save());
 				}
@@ -175,7 +174,7 @@ import Layout from "../layouts/Layout.astro";
 				updateProgressBanner("Generating ZIP file...");
 
 				const content = await zip.generateAsync({ type: "blob" });
-				saveAs(content, "SF10_Batch_Export.zip");
+				saveAs(content, "SF9_Batch_Export.zip");
 
 				console.log("Done.");
 				updateProgressBanner(
