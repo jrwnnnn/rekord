@@ -23,6 +23,6 @@ export async function populateFields(
 			field.acroField.setDefaultAppearance("/Arial 12 Tf 0 g");
 		}
 
-		styleField(field, "bookman-old-style-bold", 12, "center");
+		styleField(field, "bookman-old-style-bold", 7.8, "center");
 	}
 }
