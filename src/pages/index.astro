@@ -183,6 +183,7 @@ import htmlFields from "../data/htmlFields.json";
 <script src="@utils/downloadTemplate.ts"></script>
 <script>
 	import { createDocument } from "@utils/createDocument";
+	import { getSchema } from "@lib/getSchema";
 	import { populateFields } from "@lib/populateFields";
 	import { saveAs } from "file-saver";
 	import { updateProgressBanner } from "@utils/progressBanner";
@@ -202,11 +203,13 @@ import htmlFields from "../data/htmlFields.json";
 
 		console.log("Parsing CSV file...");
 		updateProgressBanner("Parsing CSV file...");
-		
+
 		if (!(await validateCSV(csvFile))) return;
 
-		// Load the PDF template
-		const template = await fetch("/acroforms/es.pdf").then((r) =>
+		const schema = await getSchema(csvFile);
+		if (!schema) return;
+
+		const template = await fetch(`/acroforms/${schema}.pdf`).then((r) =>
 			r.arrayBuffer(),
 		);
 
