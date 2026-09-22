@@ -1,5 +1,6 @@
 ﻿import type { PDFForm } from "pdf-lib";
 import { PDFName, PDFTextField } from "pdf-lib";
+import { styleField } from "@utils/styleField.ts";
 
 export async function populateFields(
 	form: PDFForm,
@@ -21,5 +22,7 @@ export async function populateFields(
 		if (!field.acroField.getDefaultAppearance()) {
 			field.acroField.setDefaultAppearance("/Arial 12 Tf 0 g");
 		}
+
+		styleField(field, "bookman-old-style-bold", 12, "center");
 	}
 }
