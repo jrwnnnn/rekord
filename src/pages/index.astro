@@ -223,18 +223,10 @@ import htmlFields from "../data/htmlFields.json";
 				const zip = new JSZip();
 
 				for (const row of rows) {
-					if (!row["learner.lrn"]) {
-						console.warn(
-							`Skipped row ${rows.indexOf(row) + 1} with missing LRN`,
-						);
-						continue;
-					}
+					updateProgressBanner(`Creating SF9 for ${row["name"]}...`);
 
-					updateProgressBanner(
-						`Creating SF10 for ${row["learner.last_name"]}, ${row["learner.first_name"]}...`,
-					);
 					const { pdfDoc, acroform } = await createDocument(template);
-					populateFields(acroform, formValues, row);
+					populateFields(acroform, row);
 
 					if (formValues.flatten === "on") {
 						acroform.flatten();

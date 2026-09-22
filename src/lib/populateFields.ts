@@ -1,104 +1,25 @@
 ﻿import type { PDFForm } from "pdf-lib";
-import checkboxMap from "../data/checkboxMap.json";
 import { PDFName, PDFTextField } from "pdf-lib";
-import { styleField } from "@utils/styleField";
 
 export async function populateFields(
 	form: PDFForm,
-	htmlFormValues: Record<string, FormDataEntryValue>,
 	csvRow: Record<string, string>,
 ) {
-	console.log(
-		`Creating SF10 for ${csvRow["learner.last_name"]}, ${csvRow["learner.first_name"]}...`,
-	);
+	console.log(`Creating SF9 for ${csvRow["name"]}...`);
 
-	const gradeLevel = htmlFormValues.classified_as_grade;
-
-	//Populate school/class info fields based of the HTML form
-	const SKIP_FIELDS = [
-		"file",
-		"flatten",
-		"passing_criteria",
-		"promotion_criteria",
-		"classified_as_grade",
-	];
-
-	for (const [htmlFieldName, value] of Object.entries(htmlFormValues)) {
-		if (SKIP_FIELDS.includes(htmlFieldName)) continue;
-		form
-			.getTextField(`record_${gradeLevel}.${htmlFieldName}`)
-			.setText(String(value || ""));
-	}
-
-	// Populate the remaining fields based on the CSV
 	for (const [pdfFieldName, value] of Object.entries(csvRow)) {
-		// Handle Credential Presented for Grade 1 checkbox.
-		// A student's list of presented credentials for grade 1 is stored as one comma-separated string (or "All" if every credential is present).
-		// checkboxMap.json maps each known label to its PDF checkbox field name, so we check every box whose label appears in the cell.
-		if (pdfFieldName === "credential_presented_for_grade_1") {
-			for (const [label, fieldName] of Object.entries(checkboxMap)) {
-				if (value === "All" || value.includes(label)) {
-					form.getCheckBox(fieldName).check();
-				}
-			}
-			continue;
+		try {
+			form.getTextField(pdfFieldName).setText(value || "");
+		} catch (error) {
+			console.error(`Error setting text for field ${pdfFieldName}:`, error);
 		}
-
-		// Handle remarks field based on final_rating
-		if (pdfFieldName.startsWith(`record_${gradeLevel}.final_rating.`)) {
-			const subjectCode = pdfFieldName.slice(
-				`record_${gradeLevel}.final_rating.`.length,
-			);
-
-			form
-				.getTextField(`record_${gradeLevel}.remarks.${subjectCode}`)
-				.setText(
-					Number(value) >= Number(htmlFormValues.passing_criteria)
-						? "Passed"
-						: "Failed",
-				);
-		}
-
-		form.getTextField(pdfFieldName).setText(
-			// For fields in the "learner." namespace, convert to uppercase.
-			pdfFieldName.includes("learner.")
-				? (value || "").toUpperCase()
-				: value || "",
-		);
 	}
 
-	// Handle special cases for school_id and general_remark
-	form
-		.getTextField("enrollment.school_id")
-		.setText(csvRow["learner.lrn"]?.slice(0, 6) || "");
-	form
-		.getTextField(`record_${gradeLevel}.general_remark`)
-		.setText(
-			Number(csvRow[`record_${gradeLevel}.general_average`]) >=
-				Number(htmlFormValues.promotion_criteria)
-				? "Promoted"
-				: "Retained",
-		);
-
-	// Handle special cases for "Other Credential Presented" checkboxes
-	if (csvRow["enrollment.others"])
-		form.getCheckBox("enrollment.checkbox.others").check();
-
-	if (csvRow["enrollment.pept.rating"])
-		form.getCheckBox("enrollment.checkbox.pept").check();
-
-	// Scrape /AP and seed missing /DA for all text fields, then apply styling
 	for (const field of form.getFields()) {
 		if (!(field instanceof PDFTextField)) continue;
 		field.acroField.dict.delete(PDFName.of("AP"));
 		if (!field.acroField.getDefaultAppearance()) {
 			field.acroField.setDefaultAppearance("/Arial 12 Tf 0 g");
-		}
-
-		if (field.getName().startsWith("enrollment.")) {
-			styleField(field, "arial-narrow-bold", 11, "left");
-		} else {
-			styleField(field, "arial-bold", 12, "center");
 		}
 	}
 }
