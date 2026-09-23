@@ -1,10 +1,8 @@
 import { updateProgressBanner } from "@utils/progressBanner";
 import Papa from "papaparse";
-import schema from "../data/schema.json";
 
-export function validateCSV(file: File, grade: number): Promise<boolean> {
+export function validateCSV(file: File): Promise<boolean> {
 	return new Promise((resolve) => {
-		// Check if the file is a CSV based on MIME type and extension
 		if (file.type !== "text/csv" && !file.name.toLowerCase().endsWith(".csv")) {
 			console.error("Invalid file type. Expected CSV.");
 			updateProgressBanner(
@@ -20,10 +18,8 @@ export function validateCSV(file: File, grade: number): Promise<boolean> {
 			comments: "#",
 			skipEmptyLines: true,
 			complete: (results) => {
-				const columns = results.meta.fields;
-
-				// Check if the CSV is empty
 				if (results.data.length === 0) {
+					console.error("CSV is empty.");
 					updateProgressBanner(
 						"CSV is empty.",
 						"The uploaded CSV file is empty.",
@@ -32,33 +28,15 @@ export function validateCSV(file: File, grade: number): Promise<boolean> {
 					return resolve(false);
 				}
 
-				// Find the schema for the specified grade
-				const gradeSchema = schema.find((s) => s.grade === grade);
+				const columns = results.meta.fields;
 
-				// Check for missing columns based on the grade schema
-				const missingColumns = (gradeSchema ? gradeSchema.columns : []).filter(
-					(col) => !columns!.includes(col),
-				);
-				
-				if (missingColumns.length > 0) {
-					// If there are more than 5 missing columns, show only the first 3 and indicate how many more are missing
-					let message = "";
-					if (missingColumns.length > 5) {
-						const shown = missingColumns.slice(0, 3).join(", ");
-						message = `Missing columns: ${shown}, and ${missingColumns.length - 3} more...`;
-					} else {
-						message = `Missing columns: ${missingColumns.join(", ")}`;
-					}
-
-					console.error(
-						`Invalid CSV. ${missingColumns.length} missing columns: ${missingColumns}`,
-					);
+				if (!columns) {
+					console.error("No columns found in CSV.");
 					updateProgressBanner(
-						"Invalid CSV.",
-						message,
+						"No columns found in CSV.",
+						"The uploaded CSV file does not contain any columns.",
 						"https://cdn-icons-png.flaticon.com/512/6514/6514954.png",
 					);
-
 					return resolve(false);
 				}
 
@@ -66,11 +44,6 @@ export function validateCSV(file: File, grade: number): Promise<boolean> {
 			},
 			error: (parseError) => {
 				console.error("Error parsing CSV:", parseError);
-				updateProgressBanner(
-					"Error parsing CSV.",
-					parseError.message as string,
-					"https://cdn-icons-png.flaticon.com/512/6514/6514954.png",
-				);
 				resolve(false);
 			},
 		});
