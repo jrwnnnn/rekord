@@ -16,6 +16,9 @@ node_modules/
 # test Files
 test*
 
+# Microsoft Excel lockfile
+~$*
+
 # logs
 npm-debug.log*
 yarn-debug.log*
