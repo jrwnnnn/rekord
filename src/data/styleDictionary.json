@@ -1,0 +1,35 @@
+{
+	"region": {
+		"font": "bookman-old-style",
+		"fontSize": 7.8
+	},
+	"division": {
+		"font": "bookman-old-style-bold",
+		"fontSize": 7.8
+	},
+	"district": {
+		"font": "bookman-old-style",
+		"fontSize": 7.8
+	},
+	"location": {
+		"font": "bookman-old-style",
+		"fontSize": 7.8
+	},
+	"school_name": {
+		"font": "bookman-old-style-bold",
+		"fontSize": 7.1
+	},
+	"school_year": {
+		"font": "bookman-old-style",
+		"fontSize": 7.1
+	},
+	"remarks.t1": {
+		"alignment": "left"
+	},
+	"remarks.t2": {
+		"alignment": "left"
+	},
+	"remarks.t3": {
+		"alignment": "left"
+	}
+}
