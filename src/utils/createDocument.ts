@@ -1,4 +1,4 @@
-import { initFonts } from "@utils/styleField";
+import { initFonts } from "@utils/fonts";
 import { PDFDocument } from "pdf-lib";
 import fontkit from "@pdf-lib/fontkit";
 
