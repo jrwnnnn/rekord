@@ -2,6 +2,8 @@ import type { PDFFont, PDFTextField } from "pdf-lib";
 import { TextAlignment } from "pdf-lib";
 import { getFont, type FontName } from "@utils/fonts";
 
+export type Alignment = "left" | "center" | "right";
+
 const alignmentMap = {
 	left: TextAlignment.Left,
 	center: TextAlignment.Center,
@@ -28,7 +30,7 @@ export function styleField(
 	field: PDFTextField,
 	fontName: FontName = "arial-bold",
 	maxSize = 12,
-	alignment: "left" | "center" | "right" = "center",
+	alignment: Alignment,
 ): void {
 	const font = getFont(fontName);
 	const text = field.getText() ?? "";

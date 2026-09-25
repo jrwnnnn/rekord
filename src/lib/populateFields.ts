@@ -1,4 +1,5 @@
-﻿import type { FontName } from "@utils/fonts";
+﻿import type { Alignment } from "@utils/styleField.ts";
+import type { FontName } from "@utils/fonts";
 import type { PDFForm } from "pdf-lib";
 import { PDFName, PDFTextField } from "pdf-lib";
 import { styleField } from "@utils/styleField.ts";
@@ -32,7 +33,7 @@ export async function populateFields(
 					{
 						font?: FontName;
 						fontSize?: number;
-						alignment?: "left" | "center" | "right";
+						alignment?: Alignment;
 					}
 				>
 			)[field.getName()] ?? {};
