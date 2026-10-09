@@ -1,5 +1,5 @@
 import Papa from "papaparse";
-import schema from "../data/schema.json";
+import schema from "@data/schema.json";
 
 export function getSchema(file: File): Promise<string | boolean> {
 	return new Promise((resolve) => {
